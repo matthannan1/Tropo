@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta name="description" content="Tropo provision new number">
+   <script src="https://code.jquery.com/jquery-2.2.4.js"></script>
+   <title>Provisioning</title>
+</head>
+
+<body>
+  <input type="button" value="add a number" id="activate" />
+  <div id="result"></div>
+  <script>
+    var USERNAME = "matthannan";
+    var PASSWORD = "Tropo999!";
+    var newNumber;
+    $(function() {
+   $("#activate").on("click",function(){
+       $.ajax({
+           url: "https://api.tropo.com/v1/applications/5080678/addresses",
+           method: "POST",
+           headers: {
+               "Authorization": "Basic " + btoa(USERNAME + ":" + PASSWORD)
+           },
+           data: {
+               "type":"number"
+           }
+       }).fail(function (jqXHR, exception) {
+                   var msg = '';
+                   if (jqXHR.status === 0) {
+                       msg = 'Didn\'t connect.\n Verify Network.';
+                   } else if (jqXHR.status == 404) {
+                       msg = 'Requested page not found. [404]';
+                   } else if (jqXHR.status == 500) {
+                       msg = 'Internal Server Error [500].';
+                   } else if (exception === 'parsererror') {
+                       msg = 'Requested JSON parse failed.';
+                   } else if (exception === 'timeout') {
+                       msg = 'Time out error.';
+                   } else if (exception === 'abort') {
+                       msg = 'Ajax request aborted.';
+                   } else {
+                       msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                   }
+                   $('#result').html(msg);
+       }).done(function(msg) {
+           newNumber = msg.href.substr(msg.href.length - 11);
+           $('#result').html("Here's your new number: " + newNumber);
+       });
+   });
+});
+</script>
+</body>
+</html>
